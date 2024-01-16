@@ -1,0 +1,15 @@
+.box {
+  background: rebeccapurple;
+  height: 100px;
+
+  min-width: 300px;
+  width: 75%;
+  max-width: 500px;
+}
+
+.box-clamp {
+  background: blue;
+  height: 100px;
+
+  width: clamp(300px, 75%, 500px);
+}

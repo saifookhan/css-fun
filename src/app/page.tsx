@@ -23,6 +23,11 @@ export default function Home() {
         <li>
           <a href="/09-css-grid">09-css grid (auto row & col height)</a>
         </li>
+        <li>
+          <a href="/10-width-clamp">
+            10-width-clamp(min-width, width, max-width)
+          </a>
+        </li>
       </ol>
     </main>
   );
