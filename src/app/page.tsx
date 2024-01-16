@@ -58,6 +58,11 @@ export default function Home() {
               10-width-clamp(min-width, width, max-width)
             </a>
           </li>
+          <li>
+            <a href="/011-fontsize-clamp">
+              11-fontsize-clamp(min-width, width, max-width)
+            </a>
+          </li>
         </ol>
       </div>
       <p className="text-sm font-bold text-black self-start">
