@@ -1,0 +1,11 @@
+.box {
+  background: rebeccapurple;
+  width: 200px;
+  height: 200px;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  .box {
+    background: red;
+  }
+}

@@ -1,0 +1,24 @@
+.box,
+.box-orientation {
+  background: rebeccapurple;
+  width: 200px;
+  height: 200px;
+}
+
+@media (min-width: 200px) {
+  .box {
+    background: red;
+  }
+}
+
+@media (orientation: landscape) {
+  .box-orientation {
+    background: blue;
+  }
+}
+
+@media (orientation: portrait) {
+  .box-orientation {
+    background: white;
+  }
+}
