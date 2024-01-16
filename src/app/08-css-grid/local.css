@@ -1,0 +1,22 @@
+.body {
+  display: flex;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.box {
+  background: rebeccapurple;
+  height: 100px;
+}
+
+.grid-two {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}

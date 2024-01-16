@@ -17,6 +17,9 @@ export default function Home() {
         <li>
           <a href="/07-css-grid">07-css grid</a>
         </li>
+        <li>
+          <a href="/08-css-grid">08-css grid (auto-fill, autofit)</a>
+        </li>
       </ol>
     </main>
   );
