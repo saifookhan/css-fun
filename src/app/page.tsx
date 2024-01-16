@@ -14,6 +14,9 @@ export default function Home() {
         <li>
           <a href="/04-media-queries">04-media-queries (ranges)</a>
         </li>
+        <li>
+          <a href="/07-css-grid">07-css grid</a>
+        </li>
       </ol>
     </main>
   );
