@@ -1,4 +1,32 @@
+"use client";
+
+import { useEffect } from "react";
+
 export default function Home() {
+  useEffect(() => {
+    const mainElement = document.querySelector("main");
+
+    // Apply styles using JavaScript
+    if (mainElement) {
+      mainElement.style.backgroundImage = "url(/images/bg-hue/bg-hue.svg)";
+      mainElement.style.backgroundPosition = "50%";
+      mainElement.style.backgroundSize = "cover";
+    }
+
+    mainElement?.style.setProperty("will-change", "filter", "");
+    let hue = 0;
+
+    setInterval(function () {
+      hue = (hue + 1) % 360;
+
+      mainElement?.style.setProperty(
+        "filter",
+        "hue-rotate(" + hue + "deg)",
+        ""
+      );
+    }, 5000 / 360);
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-left justify-between pt-24 pl-12">
       <ol>
