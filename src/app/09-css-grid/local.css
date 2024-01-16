@@ -1,0 +1,12 @@
+.grid {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-auto-rows: 200px;
+}
+
+.box {
+  background: rebeccapurple;
+  /* height: 100px; WE CAN DELETE THIS */
+}

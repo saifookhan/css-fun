@@ -20,6 +20,9 @@ export default function Home() {
         <li>
           <a href="/08-css-grid">08-css grid (auto-fill, autofit)</a>
         </li>
+        <li>
+          <a href="/09-css-grid">09-css grid (auto row & col height)</a>
+        </li>
       </ol>
     </main>
   );
