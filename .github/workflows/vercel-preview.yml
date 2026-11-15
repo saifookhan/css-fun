@@ -1,0 +1,114 @@
+name: Vercel preview
+
+# One preview per request. Adding the deploy label builds the current
+# pull request commit, then the label is removed. Later commits do not
+# build until the label is added again.
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy:
+    if: github.event.label.name == 'deploy' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - name: "css-fun"
+            id: "prj_enDcbcDma4UC4ZMkJt4rfIyLHwEq"
+    steps:
+      - name: Create preview deployment
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PROJECT_NAME: ${{ matrix.project.name }}
+          PROJECT_ID: ${{ matrix.project.id }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO_ID: "743950316"
+        run: |
+          set -euo pipefail
+          payload=$(jq -n \
+            --arg name "$PROJECT_NAME" \
+            --arg project "$PROJECT_ID" \
+            --arg ref "$HEAD_REF" \
+            --arg sha "$HEAD_SHA" \
+            --argjson repoId "$REPO_ID" \
+            '{name:$name, project:$project, gitSource:{type:"github", repoId:$repoId, ref:$ref, sha:$sha}}')
+          tmp=$(mktemp)
+          code=$(curl -sS -o "$tmp" -w "%{http_code}" -X POST \
+            "https://api.vercel.com/v13/deployments?teamId=team_XI0U24SoI1V8UtB298daEJPd&forceNew=1" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "Vercel deployment request failed with HTTP ${code}"
+            jq -r '.error.message // .message // "unknown error"' "$tmp" || true
+            rm -f "$tmp"
+            exit 1
+          fi
+          url=$(jq -r '.url // empty' "$tmp")
+          rm -f "$tmp"
+          if [ -z "$url" ]; then
+            echo "Deployment response did not include a URL"
+            exit 1
+          fi
+          echo "url=https://${url}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+          PROJECT_NAME: ${{ matrix.project.name }}
+        with:
+          script: |
+            const url = process.env.PREVIEW_URL;
+            const project = process.env.PROJECT_NAME;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `Vercel preview requested for \`${project}\`: ${url}`,
+            });
+
+      - name: Comment preview failure
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          PROJECT_NAME: ${{ matrix.project.name }}
+        with:
+          script: |
+            const project = process.env.PROJECT_NAME;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `Vercel preview failed for \`${project}\`. Add the \`deploy\` label again to retry.`,
+            });
+
+  clear-label:
+    needs: deploy
+    if: always() && needs.deploy.result != 'skipped' && github.event.label.name == 'deploy' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove deploy label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: "deploy",
+              });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
